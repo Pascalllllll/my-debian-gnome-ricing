@@ -1,10 +1,10 @@
-# 🍏 Dokumentasi Instalasi & Ricing Debian Linux (macOS Style)
+# Dokumentasi Instalasi & Ricing Debian Linux (macOS Style)
 
 Dokumentasi komprehensif ini mencakup instalasi *base system* Debian, setup *environment development*, hingga tahapan *ricing* secara mendalam untuk mencapai estetika macOS, menggunakan metode standar sesuai arsitektur XDG dan panduan resmi GNOME/GTK.
 
 ---
 
-## 📌 Daftar Isi
+## Daftar Isi
 1. [Persiapan & Instalasi Base System](#1-persiapan--instalasi-base-system)
 2. [Pasca-Instalasi & Sistem Dasar](#2-pasca-instalasi--sistem-dasar)
 3. [Ricing Terminal & Shell](#3-ricing-terminal--shell)
