@@ -4,6 +4,23 @@ How this laptop was set up: a minimal Debian base tracking testing, GNOME with W
 
 **Target:** Debian 14 "forky" (testing), kernel 7.x. Check your GNOME version with `gnome-shell --version`; themes and extensions below are tied to it.
 
+### When this was done, and how long it will stay accurate
+The setup was done between **September 9 and October 7, 2026**, based on the shell history. At that time Debian 14 was still in testing (its stable release is planned for 2027), and GNOME 51 had just been released upstream (September 2026).
+
+Different parts of this guide age at different speeds. The estimates below assume the usual release rhythm: GNOME ships a new version every six months (March and September), and a Debian stable release gets about three years of regular security support plus about two years of LTS.
+
+| Part | Stays usable | What ends it |
+|---|---|---|
+| Base install, apt, sudo, fish, Starship, Nerd Fonts, fastfetch | About 3 to 5 years (until around 2030 to 2032) | Forky reaching end of support |
+| GRUB theme, Plymouth, kernel parameters, NTFS mount, Docker, Python venv | About 3 to 5 years | Same; these interfaces rarely change |
+| `gsettings` keys, Flatpak overrides, `~/.config/gtk-4.0` method | About 1 to 2 years | GNOME renaming keys or changing how libadwaita loads user CSS |
+| WhiteSur flags, GDM tweak, gnome-macos bundle, Tahoe-Neo theme | 6 to 12 months per GNOME version | Each GNOME release; rerun `./install.sh --help` and get the bundle build for the new version |
+| GNOME extensions (Dash to Dock, Blur my Shell, Rain Clock, HyprQuickPaper, ...) | 6 to 12 months per GNOME version | Each GNOME release, until the extension author updates it |
+| Spicetify | Weeks to months | Every Spotify client update; rerun `spicetify backup apply` |
+| .NET 8 | Until November 10, 2026 | End of Microsoft support; move to .NET 10 (supported until November 2028) |
+
+In short: the command-line and system parts should work unchanged into the early 2030s. The visual layer, which is most of what makes the desktop look like macOS, needs a check after every GNOME upgrade, so expect small fixes about twice a year. On testing, GNOME upgrades arrive whenever Debian accepts them, not on a fixed date; once forky becomes stable in 2027, the GNOME version is frozen for that release and the visual layer stays stable much longer.
+
 ---
 
 <img width="2560" height="1600" alt="image" src="https://github.com/user-attachments/assets/a1180f15-de98-4fa8-8c0e-c4f478531d6e" />
@@ -369,8 +386,10 @@ gnome-extensions prefs rainclock@hugo-sants.github.com   # position, time and da
 ```
 `make install` already installs the fonts (Anurati, Poppins). `make fonts-install` is only for reinstalling them on their own.
 
-### HyprQuickPaper (wallpaper picker)
-[hyprquickpaper-gnome](https://github.com/hugo-sants/hyprquickpaper-gnome) opens a keyboard-driven wallpaper carousel.
+### Super+W wallpaper carousel (HyprQuickPaper)
+[hyprquickpaper-gnome](https://github.com/hugo-sants/hyprquickpaper-gnome) adds a wallpaper switcher on **Super+W** (the Windows key + W). It opens a sliding carousel of your wallpapers over the desktop; pick one and it becomes the background right away. GNOME has no built-in way to browse wallpapers from the keyboard, which is the reason for this tool.
+
+**Install**
 ```bash
 sudo apt install -y python3 python3-gi python3-cairo python3-gi-cairo gir1.2-gtk-4.0 libglib2.0-bin jq imagemagick
 cd ~
@@ -378,7 +397,36 @@ git clone https://github.com/hugo-sants/hyprquickpaper-gnome.git
 cd hyprquickpaper-gnome
 make install
 ```
-The installer asks for a wallpaper folder (default `~/Pictures/Wallpapers`) and a shortcut (default **Super+W**). In the picker: arrows or J/K to move, Enter to apply, Esc to close.
+The installer asks two questions:
+1. **Wallpaper folder.** Default `~/Pictures/Wallpapers`. The carousel shows only images in this folder, so copy your wallpapers there first (for example `cp /usr/share/backgrounds/MacTahoe/* ~/Pictures/Wallpapers/`).
+2. **Shortcut.** Press Enter to keep **Super+W**.
+
+It installs to `~/.local/share/hyprquickpaper-gnome` and registers the shortcut as a GNOME custom shortcut.
+
+**Using it**
+
+| Key | Action |
+|---|---|
+| **Super+W** | Open the carousel |
+| Right arrow or `J` / Left arrow or `K` | Next / previous wallpaper |
+| `D` / `U` | Jump several wallpapers forward / back |
+| Enter or Space | Apply the selected wallpaper |
+| Esc | Close without changing |
+| Mouse | Click to apply, drag or scroll to move |
+
+The carousel can also filter by colour and search by file name. The first launch is slower because it builds thumbnails; after that it reads them from a cache.
+
+**If Super+W does nothing or misbehaves**
+
+The shortcut is listed under Settings > Keyboard > View and Customize Shortcuts > Custom Shortcuts, where you can also change the key.
+- **No reaction:** another shortcut may already use Super+W. Search for it on the same page and clear it.
+- **New wallpapers missing:** they must be in the folder chosen during install. Rerun `make install` to change the folder.
+- **Wallpaper changes in light mode but not dark mode (or the reverse):** GNOME keeps a separate wallpaper for each mode. Set both to the same file:
+  ```bash
+  f="file://$HOME/Pictures/Wallpapers/<file>.jpg"
+  gsettings set org.gnome.desktop.background picture-uri      "$f"
+  gsettings set org.gnome.desktop.background picture-uri-dark "$f"
+  ```
 
 ### Spotify theme (Spicetify)
 Spicetify patches the Spotify client's interface. It works with the apt build of Spotify (`spotify-client` from Spotify's repo). The Snap build is read-only and cannot be patched.
@@ -470,7 +518,7 @@ The prefix makes `npm install -g` write into your home folder, so global install
 Debian testing has no `dotnet-sdk-8.0` package, and Microsoft's repo for Debian 12 does not install cleanly on testing. Use Microsoft's install script:
 ```bash
 wget https://dot.net/v1/dotnet-install.sh -O /tmp/dotnet-install.sh
-bash /tmp/dotnet-install.sh --channel 8.0
+bash /tmp/dotnet-install.sh --channel 10.0   # use 8.0 only if a course or project requires it; 8.0 support ends November 2026
 set -Ux DOTNET_ROOT ~/.dotnet
 fish_add_path ~/.dotnet ~/.dotnet/tools
 ```
