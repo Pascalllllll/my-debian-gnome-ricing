@@ -557,3 +557,4 @@ The group lets you run `docker` without `sudo`. Membership in `docker` is equiva
 | GNOME appearance settings | `gsettings reset-recursively org.gnome.desktop.interface` |
 | All extensions | `gsettings set org.gnome.shell disable-user-extensions true` |
 | Login shell back to bash | `chsh -s /bin/bash` |
+   
